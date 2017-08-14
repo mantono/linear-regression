@@ -1,8 +1,9 @@
 data class RegressionLine(val m: Double, val b: Double)
 {
 	fun y(x: Double): Double = m*x+b
+	fun x(y: Double): Double = (y-b)/m
 	operator fun get(x: Double): Double = y(x)
-	//fun xFrom(y: Double): Double = y/m-b
+	override fun toString(): String = "y = $m * x + $b"
 }
 
 data class Point(val x: Double, val y: Double)
@@ -20,9 +21,21 @@ fun residual(line: RegressionLine, point: Point): Double
 fun sumOfSquaredErrors(line: RegressionLine, data: Collection<Point>): Double
 {
 	return data.asSequence()
-			.map { residual(line, it) }
-			.map { Math.pow(it, 2.0) }
+			.map { squaredError(line, it) }
 			.sum()
+}
+
+fun squaredError(line: RegressionLine, p: Point): Double = Math.pow(residual(line, p), 2.0)
+
+fun rootMeanSquareError(line: RegressionLine, data: Collection<Point>): Double
+{
+	if(data.isEmpty())
+		return Double.NaN
+	if(data.size == 1)
+		return 0.0
+
+	val squaredErr = sumOfSquaredErrors(line, data) / (data.size - 1)
+	return Math.sqrt(squaredErr)
 }
 
 fun totalVariationInY(data: Collection<Point>): Double
@@ -38,25 +51,28 @@ fun totalVariationInY(data: Collection<Point>): Double
 			.sum()
 }
 
+inline fun squared(n: Double): Double = Math.pow(n, 2.0)
+
 fun regressionLineFrom(c: Collection<Point>): RegressionLine
 {
 	val xMean = c.asSequence()
 			.map { it.x }
 			.average()
 
-	val xStdDev = c.asSequence()
-			.map { it.x }
-			.standardDeviation()
-
 	val yMean = c.asSequence()
 			.map { it.y }
 			.average()
 
-	val yStdDev = c.asSequence()
-			.map { it.y }
-			.standardDeviation()
+	val xyMean = c.asSequence()
+			.map { it.x * it.y }
+			.average()
 
+	val xSquaredMean = c.asSequence()
+			.map { squared(it.x) }
+			.average()
 
-	val r = residual()
-	val m = r * (yStdDev / xStdDev)
+	val m: Double = (xMean * yMean - (xyMean)) / (Math.pow(xMean, 2.0) - xSquaredMean)
+	val b: Double = yMean - (m * xMean)
+
+	return RegressionLine(m, b)
 }
