@@ -1,3 +1,5 @@
+package com.mantono.lingress
+
 fun median(c: Collection<Number>): Double = c.asSequence().median()
 fun mean(c: Collection<Number>): Double = c.map { it.toDouble() }.average()
 fun range(c: Collection<Number>): Double = c.asSequence().range()

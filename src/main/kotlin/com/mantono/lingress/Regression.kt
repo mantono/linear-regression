@@ -1,3 +1,5 @@
+package com.mantono.lingress
+
 data class RegressionLine(val m: Double, val b: Double)
 {
 	fun y(x: Double): Double = m*x+b
@@ -21,7 +23,7 @@ fun residual(line: RegressionLine, point: Point): Double
 fun sumOfSquaredErrors(line: RegressionLine, data: Collection<Point>): Double
 {
 	return data.asSequence()
-			.map { squaredError(line, it) }
+			.map {squaredError(line, it)}
 			.sum()
 }
 
@@ -68,7 +70,7 @@ fun regressionLineFrom(c: Collection<Point>): RegressionLine
 			.average()
 
 	val xSquaredMean = c.asSequence()
-			.map { squared(it.x) }
+			.map {squared(it.x)}
 			.average()
 
 	val m: Double = (xMean * yMean - (xyMean)) / (Math.pow(xMean, 2.0) - xSquaredMean)
