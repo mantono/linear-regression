@@ -44,6 +44,11 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+    test.kotlin.srcDirs += 'src/test/kotlin'
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
